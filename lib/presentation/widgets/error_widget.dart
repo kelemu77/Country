@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import '../../core/theme/app_colors.dart';
 
 class ErrorDisplayWidget extends StatelessWidget {
   final String message;
@@ -22,7 +23,7 @@ class ErrorDisplayWidget extends StatelessWidget {
             Icon(
               Icons.error_outline,
               size: 64.sp,
-              color: Colors.red[300],
+              color: AppColors.getErrorIcon(context),
             ),
             SizedBox(height: 16.h),
             Text(

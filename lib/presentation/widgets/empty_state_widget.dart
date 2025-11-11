@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import '../../core/theme/app_colors.dart';
 
 class EmptyStateWidget extends StatelessWidget {
   final String message;
@@ -22,14 +23,14 @@ class EmptyStateWidget extends StatelessWidget {
             Icon(
               icon,
               size: 64.sp,
-              color: Colors.grey[400],
+              color: AppColors.getEmptyIcon(context),
             ),
             SizedBox(height: 16.h),
             Text(
               message,
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                    color: Colors.grey[600],
+                    color: AppColors.getEmptyText(context),
                     fontSize: 16.sp,
                   ),
             ),

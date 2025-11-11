@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import '../../core/theme/app_colors.dart';
 
 class LoadingShimmer extends StatelessWidget {
   const LoadingShimmer({super.key});
@@ -11,8 +12,8 @@ class LoadingShimmer extends StatelessWidget {
       itemCount: 10,
       itemBuilder: (context, index) {
         return Shimmer.fromColors(
-          baseColor: Colors.grey[300]!,
-          highlightColor: Colors.grey[100]!,
+          baseColor: AppColors.getShimmerBase(context),
+          highlightColor: AppColors.getShimmerHighlight(context),
           child: Card(
             margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
             child: Padding(
@@ -23,7 +24,7 @@ class LoadingShimmer extends StatelessWidget {
                     width: 64.w,
                     height: 46.h,
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: AppColors.getCardBackground(context),
                       borderRadius: BorderRadius.circular(6.r),
                     ),
                   ),
@@ -36,7 +37,7 @@ class LoadingShimmer extends StatelessWidget {
                           width: double.infinity,
                           height: 17.h,
                           decoration: BoxDecoration(
-                            color: Colors.white,
+                            color: AppColors.getCardBackground(context),
                             borderRadius: BorderRadius.circular(4.r),
                           ),
                         ),
@@ -45,7 +46,7 @@ class LoadingShimmer extends StatelessWidget {
                           width: 150.w,
                           height: 15.h,
                           decoration: BoxDecoration(
-                            color: Colors.white,
+                            color: AppColors.getCardBackground(context),
                             borderRadius: BorderRadius.circular(4.r),
                           ),
                         ),

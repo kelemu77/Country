@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import '../../core/theme/app_colors.dart';
 import '../bloc/favorites/favorites_cubit.dart';
 import '../bloc/favorites/favorites_state.dart';
 import '../widgets/country_card.dart';
@@ -34,16 +35,16 @@ class FavoritesPageState extends State<FavoritesPage> {
         return _cubit!;
       },
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.getBackground(context),
         appBar: AppBar(
-          backgroundColor: Colors.white,
+          backgroundColor: AppColors.getSurface(context),
           elevation: 0,
           title: Text(
             'Favorites',
             style: TextStyle(
               fontSize: 26.sp,
               fontWeight: FontWeight.bold,
-              color: const Color(0xFF1A1A1A),
+              color: AppColors.getPrimaryText(context),
             ),
           ),
         ),

@@ -60,25 +60,6 @@ class HomePageState extends State<HomePage> {
             textAlign: TextAlign.center,
           ),
           actions: [
-            // Theme toggle button
-            if (widget.onThemeToggle != null)
-              Builder(
-                builder: (context) {
-                  final isDark =
-                      Theme.of(context).brightness == Brightness.dark;
-                  return IconButton(
-                    icon: Icon(
-                      isDark ? Icons.light_mode : Icons.dark_mode,
-                      color: AppColors.getIconColor(context),
-                      size: 24.sp,
-                    ),
-                    onPressed: widget.onThemeToggle,
-                    tooltip: isDark
-                        ? 'Switch to light mode'
-                        : 'Switch to dark mode',
-                  );
-                },
-              ),
             // Sort menu button
             BlocBuilder<HomeCubit, HomeState>(
               builder: (context, state) {
@@ -184,6 +165,25 @@ class HomePageState extends State<HomePage> {
                 );
               },
             ),
+            // Theme toggle button
+            if (widget.onThemeToggle != null)
+              Builder(
+                builder: (context) {
+                  final isDark =
+                      Theme.of(context).brightness == Brightness.dark;
+                  return IconButton(
+                    icon: Icon(
+                      isDark ? Icons.light_mode : Icons.dark_mode,
+                      color: AppColors.getIconColor(context),
+                      size: 24.sp,
+                    ),
+                    onPressed: widget.onThemeToggle,
+                    tooltip: isDark
+                        ? 'Switch to light mode'
+                        : 'Switch to dark mode',
+                  );
+                },
+              ),
             SizedBox(width: 8.w),
           ],
         ),

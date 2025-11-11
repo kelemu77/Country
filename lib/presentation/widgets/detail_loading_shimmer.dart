@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import '../../core/theme/app_colors.dart';
 
 class DetailLoadingShimmer extends StatelessWidget {
   const DetailLoadingShimmer({super.key});
@@ -14,16 +15,16 @@ class DetailLoadingShimmer extends StatelessWidget {
           // Flag shimmer with light teal background
           Container(
             width: double.infinity,
-            color: const Color(0xFFE0F7FA),
+            color: AppColors.getFlagBackground(context),
             padding: EdgeInsets.all(16.w),
             child: Shimmer.fromColors(
-              baseColor: Colors.grey[300]!,
-              highlightColor: Colors.grey[100]!,
+              baseColor: AppColors.getShimmerBase(context),
+              highlightColor: AppColors.getShimmerHighlight(context),
               child: Container(
                 width: double.infinity,
                 height: 200.h,
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: AppColors.getCardBackground(context),
                   borderRadius: BorderRadius.circular(12.r),
                 ),
               ),
@@ -37,13 +38,13 @@ class DetailLoadingShimmer extends StatelessWidget {
               children: [
                 // "Key Statistics" title shimmer
                 Shimmer.fromColors(
-                  baseColor: Colors.grey[300]!,
-                  highlightColor: Colors.grey[100]!,
+                  baseColor: AppColors.getShimmerBase(context),
+                  highlightColor: AppColors.getShimmerHighlight(context),
                   child: Container(
                     width: 150.w,
                     height: 24.h,
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: AppColors.getCardBackground(context),
                       borderRadius: BorderRadius.circular(4.r),
                     ),
                   ),
@@ -53,8 +54,8 @@ class DetailLoadingShimmer extends StatelessWidget {
                 ...List.generate(4, (index) => Padding(
                       padding: EdgeInsets.only(bottom: 12.h),
                       child: Shimmer.fromColors(
-                        baseColor: Colors.grey[300]!,
-                        highlightColor: Colors.grey[100]!,
+                        baseColor: AppColors.getShimmerBase(context),
+                        highlightColor: AppColors.getShimmerHighlight(context),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
@@ -62,7 +63,7 @@ class DetailLoadingShimmer extends StatelessWidget {
                               width: 100.w,
                               height: 16.h,
                               decoration: BoxDecoration(
-                                color: Colors.white,
+                                color: AppColors.getCardBackground(context),
                                 borderRadius: BorderRadius.circular(4.r),
                               ),
                             ),
@@ -70,7 +71,7 @@ class DetailLoadingShimmer extends StatelessWidget {
                               width: 150.w,
                               height: 16.h,
                               decoration: BoxDecoration(
-                                color: Colors.white,
+                                color: AppColors.getCardBackground(context),
                                 borderRadius: BorderRadius.circular(4.r),
                               ),
                             ),

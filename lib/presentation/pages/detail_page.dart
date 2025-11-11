@@ -6,29 +6,30 @@ import '../bloc/detail/detail_state.dart';
 import '../widgets/error_widget.dart';
 import '../widgets/detail_loading_shimmer.dart';
 import '../../core/utils/formatters.dart';
+import '../../core/theme/app_colors.dart';
 import '../../injection/injection_container.dart';
 
 class DetailPage extends StatelessWidget {
   final String countryCode;
   final String? heroTagPrefix;
 
-  const DetailPage({
-    super.key,
-    required this.countryCode,
-    this.heroTagPrefix,
-  });
+  const DetailPage({super.key, required this.countryCode, this.heroTagPrefix});
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => getIt<DetailCubit>(param1: countryCode),
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.getBackground(context),
         appBar: AppBar(
-          backgroundColor: Colors.white,
+          backgroundColor: AppColors.getSurface(context),
           elevation: 0,
           leading: IconButton(
-            icon: Icon(Icons.arrow_back, color: const Color(0xFF1A1A1A), size: 24.sp),
+            icon: Icon(
+              Icons.arrow_back,
+              color: AppColors.getIconColor(context),
+              size: 24.sp,
+            ),
             onPressed: () => Navigator.pop(context),
           ),
           title: BlocBuilder<DetailCubit, DetailState>(
@@ -36,7 +37,7 @@ class DetailPage extends StatelessWidget {
               return Text(
                 state.countryDetails?.name.common ?? 'Loading...',
                 style: TextStyle(
-                  color: const Color(0xFF1A1A1A),
+                  color: AppColors.getPrimaryText(context),
                   fontWeight: FontWeight.bold,
                   fontSize: 20.sp,
                 ),
@@ -49,7 +50,9 @@ class DetailPage extends StatelessWidget {
                 return IconButton(
                   icon: Icon(
                     state.isFavorite ? Icons.favorite : Icons.favorite_border,
-                    color: state.isFavorite ? Colors.red : const Color(0xFF1A1A1A),
+                    color: state.isFavorite
+                        ? AppColors.getFavorite(context)
+                        : AppColors.getIconColor(context),
                     size: 24.sp,
                   ),
                   onPressed: () async {
@@ -85,22 +88,23 @@ class DetailPage extends StatelessWidget {
                   // Flag section with light teal background
                   Container(
                     width: double.infinity,
-                    color: const Color(0xFFE0F7FA),
-                    padding: EdgeInsets.all(16.w),
+                    color: AppColors.getFlagBackground(context),
+                    padding: EdgeInsets.only(left: 3.w, right: 3.w, top: 16.h),
                     child: Hero(
-                      tag: 'country_flag_${countryCode}_${heroTagPrefix ?? 'home'}',
+                      tag:
+                          'country_flag_${countryCode}_${heroTagPrefix ?? 'home'}',
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(12.r),
                         child: Image.network(
                           country.flags.png ?? country.flags.svg ?? '',
                           width: double.infinity,
-                          height: 200.h,
+                          height: 313.h,
                           fit: BoxFit.cover,
                           errorBuilder: (context, error, stackTrace) {
                             return Container(
                               width: double.infinity,
                               height: 200.h,
-                              color: Colors.grey[300],
+                              color: AppColors.getErrorPlaceholder(context),
                               child: Icon(Icons.flag, size: 64.sp),
                             );
                           },
@@ -120,20 +124,35 @@ class DetailPage extends StatelessWidget {
                           style: TextStyle(
                             fontSize: 20.sp,
                             fontWeight: FontWeight.bold,
-                            color: const Color(0xFF1A1A1A),
+                            color: AppColors.getPrimaryText(context),
                           ),
                         ),
                         SizedBox(height: 16.h),
-                        _buildStatRow('Area', Formatters.formatArea(country.area)),
-                        SizedBox(height: 12.h),
                         _buildStatRow(
-                          'Population',
-                          Formatters.formatPopulationDetailed(country.population),
+                          context,
+                          'Area',
+                          Formatters.formatArea(country.area),
                         ),
                         SizedBox(height: 12.h),
-                        _buildStatRow('Region', country.region ?? 'N/A'),
+                        _buildStatRow(
+                          context,
+                          'Population',
+                          Formatters.formatPopulationDetailed(
+                            country.population,
+                          ),
+                        ),
                         SizedBox(height: 12.h),
-                        _buildStatRow('Sub Region', country.subregion ?? 'N/A'),
+                        _buildStatRow(
+                          context,
+                          'Region',
+                          country.region ?? 'N/A',
+                        ),
+                        SizedBox(height: 12.h),
+                        _buildStatRow(
+                          context,
+                          'Sub Region',
+                          country.subregion ?? 'N/A',
+                        ),
                         // Timezone section
                         if (country.timezones != null &&
                             country.timezones!.isNotEmpty) ...[
@@ -143,7 +162,7 @@ class DetailPage extends StatelessWidget {
                             style: TextStyle(
                               fontSize: 20.sp,
                               fontWeight: FontWeight.bold,
-                              color: const Color(0xFF1A1A1A),
+                              color: AppColors.getPrimaryText(context),
                             ),
                           ),
                           SizedBox(height: 16.h),
@@ -157,10 +176,10 @@ class DetailPage extends StatelessWidget {
                                   vertical: 12.h,
                                 ),
                                 decoration: BoxDecoration(
-                                  color: Colors.white,
+                                  color: AppColors.getCardBackground(context),
                                   borderRadius: BorderRadius.circular(8.r),
                                   border: Border.all(
-                                    color: const Color(0xFFE0E0E0),
+                                    color: AppColors.getBorder(context),
                                     width: 1.w,
                                   ),
                                 ),
@@ -168,7 +187,7 @@ class DetailPage extends StatelessWidget {
                                   timezone,
                                   style: TextStyle(
                                     fontSize: 14.sp,
-                                    color: const Color(0xFF1A1A1A),
+                                    color: AppColors.getPrimaryText(context),
                                   ),
                                 ),
                               );
@@ -187,7 +206,7 @@ class DetailPage extends StatelessWidget {
     );
   }
 
-  Widget _buildStatRow(String label, String value) {
+  Widget _buildStatRow(BuildContext context, String label, String value) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -196,7 +215,7 @@ class DetailPage extends StatelessWidget {
           label,
           style: TextStyle(
             fontSize: 16.sp,
-            color: const Color(0xFF757575),
+            color: AppColors.getSearchIcon(context),
           ),
         ),
         Expanded(
@@ -205,7 +224,7 @@ class DetailPage extends StatelessWidget {
             textAlign: TextAlign.right,
             style: TextStyle(
               fontSize: 16.sp,
-              color: const Color(0xFF1A1A1A),
+              color: AppColors.getPrimaryText(context),
               fontWeight: FontWeight.w400,
             ),
           ),
