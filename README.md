@@ -80,7 +80,7 @@ lib/
 
 1. **Clone the repository**
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/kelemu77/Country.git
    cd a2sv
    ```
 
@@ -107,6 +107,74 @@ flutter build apk --release
 ```
 
 The APK will be located at: `build/app/outputs/flutter-apk/app-release.apk`
+
+
+For IOS
+
+1. Prepare Your App
+
+Make sure your app builds successfully with no errors.
+
+Update your version and build number in Xcode:
+
+Go to Project Navigator → your app target → General → Version & Build.
+
+Ensure you’re using the correct bundle identifier and signing certificate.
+
+Check that your app icon, privacy info, and other metadata are set up.
+
+2. Archive Your App
+
+In Xcode’s top menu:
+Product → Archive
+
+Wait for the build process to complete.
+
+When done, the Organizer window opens automatically showing your new archive.
+
+3. Upload to App Store Connect
+
+In Organizer, select your archive → click Distribute App.
+
+Choose App Store Connect → then Upload.
+
+Follow the prompts:
+
+Select your team.
+
+Ensure “Include bitcode” (for older builds) is unchecked if unnecessary.
+
+Check for any warnings or validation issues.
+
+Click Upload.
+(You’ll see progress and then a success confirmation.)
+
+4. Wait for Processing
+
+Go to App Store Connect → My Apps
+.
+
+Select your app.
+
+Under TestFlight, you’ll see your build appear after Apple finishes processing it (usually takes 5–30 minutes).
+
+5. Add Testers
+
+Once the build is processed:
+
+Internal testers (your App Store Connect team): can be added immediately.
+
+External testers: need Apple’s beta app review (usually 24–48 hours).
+
+Go to:
+
+App Store Connect → My Apps → TestFlight tab
+
+Then choose:
+
+Internal Testing → Add testers.
+
+External Testing → Create a new group → Add testers → Submit for review.
 
 ## API Integration
 
@@ -191,9 +259,6 @@ flutter test
 
 ## Future Enhancements
 
-- Unit and integration tests
-- Sorting functionality (by name, population)
-- Tablet/Web responsive layouts
 - Country comparison feature
 - Map integration showing country locations
 
@@ -202,5 +267,5 @@ flutter test
 This project is created for A2SV technical interview.
 
 ## Author
+ Kelemu ketsela Mengistu
 
-Built with ❤️ using Flutter and BLoC/Cubit

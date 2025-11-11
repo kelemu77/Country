@@ -23,6 +23,8 @@ class HomePage extends StatefulWidget {
 
 class HomePageState extends State<HomePage> {
   final TextEditingController _searchController = TextEditingController();
+  final FocusNode _searchFocusNode = FocusNode();
+  final GlobalKey<_SearchBarState> _searchBarKey = GlobalKey<_SearchBarState>();
   HomeCubit? _cubit;
 
   void refreshFavorites() {
@@ -32,6 +34,7 @@ class HomePageState extends State<HomePage> {
   @override
   void dispose() {
     _searchController.dispose();
+    _searchFocusNode.dispose();
     super.dispose();
   }
 
@@ -189,50 +192,26 @@ class HomePageState extends State<HomePage> {
         ),
         body: BlocBuilder<HomeCubit, HomeState>(
           builder: (context, state) {
-            final searchBar = Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16.w),
-              child: TextField(
-                controller: _searchController,
-                decoration: InputDecoration(
-                  hintText: 'Search for a country',
-                  hintStyle: TextStyle(
-                    color: AppColors.getHintText(context),
-                    fontSize: 17.sp,
-                  ),
-                  prefixIcon: Icon(
-                    Icons.search,
-                    color: AppColors.getSearchIcon(context),
-                    size: 20.sp,
-                  ),
-                  filled: true,
-                  fillColor: AppColors.getSearchBackground(context),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12.r),
-                    borderSide: BorderSide.none,
-                  ),
-                  contentPadding: EdgeInsets.symmetric(
-                    horizontal: 16.w,
-                    vertical: 16.h,
-                  ),
-                ),
-                style: TextStyle(
-                  fontSize: 17.sp,
-                  color: AppColors.getPrimaryText(context),
-                ),
-                onChanged: (query) {
-                  context.read<HomeCubit>().onSearchChanged(query);
-                },
-              ),
+            final searchBar = _SearchBar(
+              key: _searchBarKey,
+              controller: _searchController,
+              focusNode: _searchFocusNode,
+              searchQuery: state.searchQuery,
+              onChanged: (query) {
+                context.read<HomeCubit>().onSearchChanged(query);
+              },
+              onClear: () {
+                _searchController.clear();
+                context.read<HomeCubit>().onSearchChanged('');
+                _searchFocusNode.requestFocus();
+              },
             );
 
             // If search is active, make search bar fixed
             if (state.searchQuery.isNotEmpty) {
               return Column(
                 children: [
-                  Padding(
-                    padding: EdgeInsets.only(top: 8.h, bottom: 8.h),
-                    child: searchBar,
-                  ),
+                  searchBar,
                   Expanded(
                     child: RefreshIndicator(
                       onRefresh: () => context.read<HomeCubit>().refresh(),
@@ -466,6 +445,90 @@ class HomePageState extends State<HomePage> {
           }, childCount: state.countries.length),
         );
       },
+    );
+  }
+}
+
+// Separate widget to prevent TextField from losing focus on rebuild
+class _SearchBar extends StatefulWidget {
+  final TextEditingController controller;
+  final FocusNode focusNode;
+  final String searchQuery;
+  final ValueChanged<String> onChanged;
+  final VoidCallback onClear;
+
+  const _SearchBar({
+    super.key,
+    required this.controller,
+    required this.focusNode,
+    required this.searchQuery,
+    required this.onChanged,
+    required this.onClear,
+  });
+
+  @override
+  State<_SearchBar> createState() => _SearchBarState();
+}
+
+class _SearchBarState extends State<_SearchBar>
+    with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
+
+  @override
+  Widget build(BuildContext context) {
+    super.build(context); // Required for AutomaticKeepAliveClientMixin
+    // TextField with stable key - only decoration updates, widget stays stable
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 16.w),
+      child: Padding(
+        padding: EdgeInsets.only(
+          top: widget.searchQuery.isNotEmpty ? 8.h : 0,
+          bottom: widget.searchQuery.isNotEmpty ? 8.h : 0,
+        ),
+        child: TextField(
+          key: const ValueKey('search_text_field'),
+          controller: widget.controller,
+          focusNode: widget.focusNode,
+          decoration: InputDecoration(
+            hintText: 'Search for a country',
+            hintStyle: TextStyle(
+              color: AppColors.getHintText(context),
+              fontSize: 17.sp,
+            ),
+            prefixIcon: Icon(
+              Icons.search,
+              color: AppColors.getSearchIcon(context),
+              size: 20.sp,
+            ),
+            suffixIcon: widget.searchQuery.isNotEmpty
+                ? IconButton(
+                    icon: Icon(
+                      Icons.clear,
+                      color: AppColors.getSearchIcon(context),
+                      size: 20.sp,
+                    ),
+                    onPressed: widget.onClear,
+                  )
+                : null,
+            filled: true,
+            fillColor: AppColors.getSearchBackground(context),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12.r),
+              borderSide: BorderSide.none,
+            ),
+            contentPadding: EdgeInsets.symmetric(
+              horizontal: 16.w,
+              vertical: 16.h,
+            ),
+          ),
+          style: TextStyle(
+            fontSize: 17.sp,
+            color: AppColors.getPrimaryText(context),
+          ),
+          onChanged: widget.onChanged,
+        ),
+      ),
     );
   }
 }

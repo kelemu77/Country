@@ -61,7 +61,22 @@ class CountryRemoteDataSourceImpl implements CountryRemoteDataSource {
   @override
   Future<List<CountrySummaryModel>> searchCountries(String name) async {
     try {
-      final response = await dio.get(ApiConstants.searchByName(name));
+      final response = await dio.get(
+        ApiConstants.searchByName(name),
+        options: Options(
+          validateStatus: (status) {
+            // Accept 200, 304 (cached), and 404 (not found) as valid statuses
+            return status != null &&
+                (status == 200 || status == 304 || status == 404);
+          },
+        ),
+      );
+
+      // Handle 404 - no countries found
+      if (response.statusCode == 404) {
+        return [];
+      }
+
       // Accept both 200 (OK) and 304 (Not Modified from cache) as valid responses
       if ((response.statusCode == 200 || response.statusCode == 304) &&
           response.data != null) {
@@ -84,11 +99,21 @@ class CountryRemoteDataSourceImpl implements CountryRemoteDataSource {
       }
       return [];
     } on DioException catch (e) {
+      // Handle 404 explicitly - no countries found
       if (e.response?.statusCode == 404) {
         return [];
       }
+      // Handle other network errors
+      if (e.type == DioExceptionType.connectionError ||
+          e.type == DioExceptionType.connectionTimeout ||
+          e.type == DioExceptionType.receiveTimeout) {
+        throw Exception(
+          'Network error: ${e.message ?? 'No internet connection'}',
+        );
+      }
       throw Exception('Search failed: ${e.message ?? 'Network error'}');
     } catch (e) {
+      // For any other errors, return empty list (no results found)
       return [];
     }
   }
