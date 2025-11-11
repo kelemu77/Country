@@ -10,9 +10,12 @@ import '../widgets/error_widget.dart';
 import '../widgets/empty_state_widget.dart';
 import 'detail_page.dart';
 import '../../injection/injection_container.dart';
+import '../../core/theme/app_colors.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+  final VoidCallback? onThemeToggle;
+
+  const HomePage({super.key, this.onThemeToggle});
 
   @override
   State<HomePage> createState() => HomePageState();
@@ -40,9 +43,9 @@ class HomePageState extends State<HomePage> {
         return _cubit!;
       },
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.getBackground(context),
         appBar: AppBar(
-          backgroundColor: Colors.white,
+          backgroundColor: AppColors.getSurface(context),
           elevation: 0,
           centerTitle: true,
           title: Text(
@@ -52,10 +55,137 @@ class HomePageState extends State<HomePage> {
               fontWeight: FontWeight.w700,
               height: 23 / 18, // line-height: 23px / font-size: 18px = 1.277...
               letterSpacing: 0,
-              color: const Color(0xFF1A1A1A),
+              color: AppColors.getPrimaryText(context),
             ),
             textAlign: TextAlign.center,
           ),
+          actions: [
+            // Theme toggle button
+            if (widget.onThemeToggle != null)
+              Builder(
+                builder: (context) {
+                  final isDark =
+                      Theme.of(context).brightness == Brightness.dark;
+                  return IconButton(
+                    icon: Icon(
+                      isDark ? Icons.light_mode : Icons.dark_mode,
+                      color: AppColors.getIconColor(context),
+                      size: 24.sp,
+                    ),
+                    onPressed: widget.onThemeToggle,
+                    tooltip: isDark
+                        ? 'Switch to light mode'
+                        : 'Switch to dark mode',
+                  );
+                },
+              ),
+            // Sort menu button
+            BlocBuilder<HomeCubit, HomeState>(
+              builder: (context, state) {
+                return PopupMenuButton<SortOption>(
+                  icon: Icon(
+                    Icons.sort,
+                    color: AppColors.getIconColor(context),
+                    size: 24.sp,
+                  ),
+                  onSelected: (SortOption option) {
+                    context.read<HomeCubit>().setSortOption(option);
+                  },
+                  itemBuilder: (BuildContext context) =>
+                      <PopupMenuEntry<SortOption>>[
+                        PopupMenuItem<SortOption>(
+                          value: SortOption.none,
+                          child: Row(
+                            children: [
+                              if (state.sortOption == SortOption.none)
+                                Icon(
+                                  Icons.check,
+                                  size: 20.sp,
+                                  color: AppColors.getCheckIcon(context),
+                                )
+                              else
+                                SizedBox(width: 20.sp),
+                              SizedBox(width: 8.w),
+                              Text('No Sort'),
+                            ],
+                          ),
+                        ),
+                        const PopupMenuDivider(),
+                        PopupMenuItem<SortOption>(
+                          value: SortOption.nameAsc,
+                          child: Row(
+                            children: [
+                              if (state.sortOption == SortOption.nameAsc)
+                                Icon(
+                                  Icons.check,
+                                  size: 20.sp,
+                                  color: AppColors.getCheckIcon(context),
+                                )
+                              else
+                                SizedBox(width: 20.sp),
+                              SizedBox(width: 8.w),
+                              Text('Name (A-Z)'),
+                            ],
+                          ),
+                        ),
+                        PopupMenuItem<SortOption>(
+                          value: SortOption.nameDesc,
+                          child: Row(
+                            children: [
+                              if (state.sortOption == SortOption.nameDesc)
+                                Icon(
+                                  Icons.check,
+                                  size: 20.sp,
+                                  color: AppColors.getCheckIcon(context),
+                                )
+                              else
+                                SizedBox(width: 20.sp),
+                              SizedBox(width: 8.w),
+                              Text('Name (Z-A)'),
+                            ],
+                          ),
+                        ),
+                        const PopupMenuDivider(),
+                        PopupMenuItem<SortOption>(
+                          value: SortOption.populationAsc,
+                          child: Row(
+                            children: [
+                              if (state.sortOption == SortOption.populationAsc)
+                                Icon(
+                                  Icons.check,
+                                  size: 20.sp,
+                                  color: AppColors.getCheckIcon(context),
+                                )
+                              else
+                                SizedBox(width: 20.sp),
+                              SizedBox(width: 8.w),
+                              Text('Population (Low to High)'),
+                            ],
+                          ),
+                        ),
+                        PopupMenuItem<SortOption>(
+                          value: SortOption.populationDesc,
+                          child: Row(
+                            children: [
+                              if (state.sortOption == SortOption.populationDesc)
+                                Icon(
+                                  Icons.check,
+                                  size: 20.sp,
+                                  color: AppColors.getCheckIcon(context),
+                                )
+                              else
+                                SizedBox(width: 20.sp),
+                              SizedBox(width: 8.w),
+                              Text('Population (High to Low)'),
+                            ],
+                          ),
+                        ),
+                      ],
+                );
+              },
+            ),
+            SizedBox(width: 8.w),
+          ],
         ),
         body: BlocBuilder<HomeCubit, HomeState>(
           builder: (context, state) {
@@ -66,16 +196,16 @@ class HomePageState extends State<HomePage> {
                 decoration: InputDecoration(
                   hintText: 'Search for a country',
                   hintStyle: TextStyle(
-                    color: const Color(0xFF9E9E9E),
+                    color: AppColors.getHintText(context),
                     fontSize: 17.sp,
                   ),
                   prefixIcon: Icon(
                     Icons.search,
-                    color: const Color(0xFF757575),
+                    color: AppColors.getSearchIcon(context),
                     size: 20.sp,
                   ),
                   filled: true,
-                  fillColor: const Color(0xFFF5F5F5),
+                  fillColor: AppColors.getSearchBackground(context),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12.r),
                     borderSide: BorderSide.none,
@@ -87,7 +217,7 @@ class HomePageState extends State<HomePage> {
                 ),
                 style: TextStyle(
                   fontSize: 17.sp,
-                  color: const Color(0xFF1A1A1A),
+                  color: AppColors.getPrimaryText(context),
                 ),
                 onChanged: (query) {
                   context.read<HomeCubit>().onSearchChanged(query);
@@ -153,32 +283,83 @@ class HomePageState extends State<HomePage> {
       return const EmptyStateWidget(message: 'No countries found.');
     }
 
-    return ListView.builder(
-      itemCount: state.countries.length,
-      itemBuilder: (context, index) {
-        final country = state.countries[index];
-        return CountryCard(
-          country: country,
-          isFavorite: state.isFavorite(country.code),
-          heroTagPrefix: 'home',
-          hidePopulation: state.searchQuery.isNotEmpty,
-          onTap: () async {
-            await Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => DetailPage(
-                  countryCode: country.code,
-                  heroTagPrefix: 'home',
-                ),
-              ),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        // Use grid layout for tablets/web (width > 600)
+        final isTablet = constraints.maxWidth > 600;
+        final crossAxisCount = isTablet
+            ? (constraints.maxWidth ~/ 300).clamp(2, 4)
+            : 1;
+
+        if (isTablet) {
+          return GridView.builder(
+            padding: EdgeInsets.all(16.w),
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: crossAxisCount,
+              crossAxisSpacing: 16.w,
+              mainAxisSpacing: 16.h,
+              childAspectRatio: 2.5,
+            ),
+            itemCount: state.countries.length,
+            itemBuilder: (context, index) {
+              final country = state.countries[index];
+              return CountryCard(
+                country: country,
+                isFavorite: state.isFavorite(country.code),
+                heroTagPrefix: 'home',
+                hidePopulation: state.searchQuery.isNotEmpty,
+                onTap: () async {
+                  await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => DetailPage(
+                        countryCode: country.code,
+                        heroTagPrefix: 'home',
+                      ),
+                    ),
+                  );
+                  // Refresh favorites when returning from detail page
+                  if (context.mounted) {
+                    context.read<HomeCubit>().loadFavorites();
+                  }
+                },
+                onFavoriteToggle: () {
+                  context.read<HomeCubit>().toggleFavorite(country.code);
+                },
+              );
+            },
+          );
+        }
+
+        // List layout for mobile
+        return ListView.builder(
+          itemCount: state.countries.length,
+          itemBuilder: (context, index) {
+            final country = state.countries[index];
+            return CountryCard(
+              country: country,
+              isFavorite: state.isFavorite(country.code),
+              heroTagPrefix: 'home',
+              hidePopulation: state.searchQuery.isNotEmpty,
+              onTap: () async {
+                await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => DetailPage(
+                      countryCode: country.code,
+                      heroTagPrefix: 'home',
+                    ),
+                  ),
+                );
+                // Refresh favorites when returning from detail page
+                if (context.mounted) {
+                  context.read<HomeCubit>().loadFavorites();
+                }
+              },
+              onFavoriteToggle: () {
+                context.read<HomeCubit>().toggleFavorite(country.code);
+              },
             );
-            // Refresh favorites when returning from detail page
-            if (context.mounted) {
-              context.read<HomeCubit>().loadFavorites();
-            }
-          },
-          onFavoriteToggle: () {
-            context.read<HomeCubit>().toggleFavorite(country.code);
           },
         );
       },
@@ -205,34 +386,86 @@ class HomePageState extends State<HomePage> {
       );
     }
 
-    return SliverList(
-      delegate: SliverChildBuilderDelegate((context, index) {
-        final country = state.countries[index];
-        return CountryCard(
-          country: country,
-          isFavorite: state.isFavorite(country.code),
-          heroTagPrefix: 'home',
-          hidePopulation: state.searchQuery.isNotEmpty,
-          onTap: () async {
-            await Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => DetailPage(
-                  countryCode: country.code,
-                  heroTagPrefix: 'home',
-                ),
+    return SliverLayoutBuilder(
+      builder: (context, constraints) {
+        // Use grid layout for tablets/web (width > 600)
+        final isTablet = constraints.crossAxisExtent > 600;
+        final crossAxisCount = isTablet
+            ? (constraints.crossAxisExtent ~/ 300).clamp(2, 4)
+            : 1;
+
+        if (isTablet) {
+          return SliverPadding(
+            padding: EdgeInsets.all(16.w),
+            sliver: SliverGrid(
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: crossAxisCount,
+                crossAxisSpacing: 16.w,
+                mainAxisSpacing: 16.h,
+                childAspectRatio: 2.5,
               ),
+              delegate: SliverChildBuilderDelegate((context, index) {
+                final country = state.countries[index];
+                return CountryCard(
+                  country: country,
+                  isFavorite: state.isFavorite(country.code),
+                  heroTagPrefix: 'home',
+                  hidePopulation: state.searchQuery.isNotEmpty,
+                  onTap: () async {
+                    await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => DetailPage(
+                          countryCode: country.code,
+                          heroTagPrefix: 'home',
+                        ),
+                      ),
+                    );
+                    // Refresh favorites when returning from detail page
+                    if (context.mounted) {
+                      context.read<HomeCubit>().loadFavorites();
+                    }
+                  },
+                  onFavoriteToggle: () {
+                    context.read<HomeCubit>().toggleFavorite(country.code);
+                  },
+                );
+              }, childCount: state.countries.length),
+            ),
+          );
+        }
+
+        // List layout for mobile
+        return SliverList(
+          delegate: SliverChildBuilderDelegate((context, index) {
+            final country = state.countries[index];
+            return CountryCard(
+              country: country,
+              isFavorite: state.isFavorite(country.code),
+              heroTagPrefix: 'home',
+              hidePopulation: state.searchQuery.isNotEmpty,
+              onTap: () async {
+                await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => DetailPage(
+                      countryCode: country.code,
+                      heroTagPrefix: 'home',
+                    ),
+                  ),
+                );
+                // Refresh favorites when returning from detail page
+                if (context.mounted) {
+                  context.read<HomeCubit>().loadFavorites();
+                }
+              },
+              onFavoriteToggle: () {
+                context.read<HomeCubit>().toggleFavorite(country.code);
+              },
             );
-            // Refresh favorites when returning from detail page
-            if (context.mounted) {
-              context.read<HomeCubit>().loadFavorites();
-            }
-          },
-          onFavoriteToggle: () {
-            context.read<HomeCubit>().toggleFavorite(country.code);
-          },
+          }, childCount: state.countries.length),
         );
-      }, childCount: state.countries.length),
+      },
     );
   }
 }

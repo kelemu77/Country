@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../core/utils/formatters.dart';
+import '../../core/theme/app_colors.dart';
 import '../../data/models/country_summary_model.dart';
 
 class CountryCard extends StatelessWidget {
@@ -30,7 +31,7 @@ class CountryCard extends StatelessWidget {
       onTap: onTap,
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
-        color: Colors.white,
+        color: AppColors.getCardBackground(context),
         child: Row(
           children: [
             Hero(
@@ -39,14 +40,15 @@ class CountryCard extends StatelessWidget {
                 borderRadius: BorderRadius.circular(8.r),
                 child: Image.network(
                   country.flags.png ?? country.flags.svg ?? '',
-                  width: 100.w,
+                  width: 95
+                      .w, // it was 100 on ui but it was too big so i reduced it to 95
                   height: 56.h,
                   fit: BoxFit.cover,
                   errorBuilder: (context, error, stackTrace) {
                     return Container(
                       width: 64.w,
                       height: 46.h,
-                      color: const Color(0xFFF5F5F5),
+                      color: AppColors.getErrorPlaceholder(context),
                       child: Icon(Icons.flag, size: 22.sp),
                     );
                   },
@@ -65,7 +67,7 @@ class CountryCard extends StatelessWidget {
                       fontWeight: FontWeight.w500,
                       height: 1.5, // line-height: 24px / font-size: 16px = 1.5
                       letterSpacing: 0,
-                      color: const Color(0xFF121417),
+                      color: AppColors.getSecondaryText(context),
                     ),
                   ),
                   if (!hidePopulation) ...[
@@ -80,20 +82,23 @@ class CountryCard extends StatelessWidget {
                         height:
                             1.5, // line-height: 21px / font-size: 14px = 1.5
                         letterSpacing: 0,
-                        color: const Color(0xFF6B7582),
+                        color: AppColors.getTertiaryText(context),
                       ),
                     ),
                   ],
                 ],
               ),
             ),
+            SizedBox(width: 16.w),
             SizedBox(
               width: 28.w,
               height: 28.h,
               child: IconButton(
                 icon: Icon(
                   isFavorite ? Icons.favorite : Icons.favorite_border,
-                  color: isFavorite ? Colors.red : const Color(0xFF9E9E9E),
+                  color: isFavorite
+                      ? AppColors.getFavorite(context)
+                      : AppColors.getHintText(context),
                   size: 24.sp,
                 ),
                 onPressed: onFavoriteToggle,

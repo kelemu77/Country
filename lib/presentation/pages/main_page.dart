@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import '../../core/theme/app_colors.dart';
 import 'home_page.dart';
 import 'favorites_page.dart';
 
 class MainPage extends StatefulWidget {
-  const MainPage({super.key});
+  final VoidCallback? onThemeToggle;
+
+  const MainPage({super.key, this.onThemeToggle});
 
   @override
   State<MainPage> createState() => _MainPageState();
@@ -26,7 +29,7 @@ class _MainPageState extends State<MainPage> {
       body: IndexedStack(
         index: _currentIndex,
         children: [
-          HomePage(key: _homePageKey),
+          HomePage(key: _homePageKey, onThemeToggle: widget.onThemeToggle),
           FavoritesPage(
             key: _favoritesPageKey,
             onFavoriteChanged: refreshHomeFavorites,
@@ -35,9 +38,9 @@ class _MainPageState extends State<MainPage> {
       ),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: AppColors.getSurface(context),
           border: Border(
-            top: BorderSide(color: const Color(0xFFE0E0E0), width: 1.w),
+            top: BorderSide(color: AppColors.getBorder(context), width: 1.w),
           ),
         ),
         child: BottomNavigationBar(
@@ -51,10 +54,10 @@ class _MainPageState extends State<MainPage> {
               _favoritesPageKey.currentState?.refreshFavorites();
             }
           },
-          backgroundColor: Colors.white,
+          backgroundColor: AppColors.getSurface(context),
           elevation: 0,
-          selectedItemColor: const Color(0xFF1A1A1A),
-          unselectedItemColor: const Color(0xFF9E9E9E),
+          selectedItemColor: AppColors.getPrimaryText(context),
+          unselectedItemColor: AppColors.getHintText(context),
           selectedLabelStyle: TextStyle(
             fontSize: 12.sp,
             fontWeight: FontWeight.w500,

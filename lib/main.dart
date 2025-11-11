@@ -10,8 +10,28 @@ void main() async {
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  ThemeMode _themeMode = ThemeMode.system;
+
+  void toggleTheme() {
+    setState(() {
+      if (_themeMode == ThemeMode.light) {
+        _themeMode = ThemeMode.dark;
+      } else if (_themeMode == ThemeMode.dark) {
+        _themeMode = ThemeMode.light;
+      } else {
+        // If system, switch to light
+        _themeMode = ThemeMode.light;
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -24,9 +44,9 @@ class MyApp extends StatelessWidget {
           title: 'Countries App',
           theme: AppTheme.lightTheme,
           darkTheme: AppTheme.darkTheme,
-          themeMode: ThemeMode.system,
+          themeMode: _themeMode,
           debugShowCheckedModeBanner: false,
-          home: const MainPage(),
+          home: MainPage(onThemeToggle: toggleTheme),
         );
       },
     );

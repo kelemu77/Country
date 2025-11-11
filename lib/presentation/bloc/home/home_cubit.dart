@@ -1,6 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'dart:async';
 import '../../../data/repositories/country_repository.dart';
+import '../../../data/models/country_summary_model.dart';
 import 'home_state.dart';
 
 class HomeCubit extends Cubit<HomeState> {
@@ -30,10 +31,11 @@ class HomeCubit extends Cubit<HomeState> {
           ),
         );
       } else {
+        final sortedCountries = _applySorting(countries, state.sortOption);
         emit(
           state.copyWith(
             allCountries: countries,
-            filteredCountries: countries,
+            filteredCountries: sortedCountries,
             isLoading: false,
           ),
         );
@@ -67,9 +69,10 @@ class HomeCubit extends Cubit<HomeState> {
 
     // If query is empty, immediately show all countries (no debounce needed)
     if (query.isEmpty) {
+      final sortedCountries = _applySorting(state.allCountries, state.sortOption);
       emit(
         state.copyWith(
-          filteredCountries: state.allCountries,
+          filteredCountries: sortedCountries,
           clearError: true,
           isLoading: false,
         ),
@@ -85,9 +88,10 @@ class HomeCubit extends Cubit<HomeState> {
 
   Future<void> _performSearch(String query) async {
     if (query.isEmpty) {
+      final sortedCountries = _applySorting(state.allCountries, state.sortOption);
       emit(
         state.copyWith(
-          filteredCountries: state.allCountries,
+          filteredCountries: sortedCountries,
           clearError: true,
           isLoading: false,
         ),
@@ -98,11 +102,48 @@ class HomeCubit extends Cubit<HomeState> {
     emit(state.copyWith(isLoading: true, clearError: true));
     try {
       final results = await repository.searchCountries(query);
-      emit(state.copyWith(filteredCountries: results, isLoading: false));
+      final sortedResults = _applySorting(results, state.sortOption);
+      emit(state.copyWith(filteredCountries: sortedResults, isLoading: false));
     } catch (e) {
       final errorMessage = e.toString().replaceAll('Exception: ', '');
       emit(state.copyWith(isLoading: false, error: errorMessage));
     }
+  }
+
+  void setSortOption(SortOption sortOption) {
+    final countriesToSort = state.searchQuery.isEmpty
+        ? state.allCountries
+        : state.filteredCountries;
+    final sortedCountries = _applySorting(countriesToSort, sortOption);
+    emit(state.copyWith(
+      sortOption: sortOption,
+      filteredCountries: sortedCountries,
+    ));
+  }
+
+  List<CountrySummaryModel> _applySorting(
+    List<CountrySummaryModel> countries,
+    SortOption sortOption,
+  ) {
+    final sorted = List<CountrySummaryModel>.from(countries);
+    switch (sortOption) {
+      case SortOption.nameAsc:
+        sorted.sort((a, b) => a.name.common.compareTo(b.name.common));
+        break;
+      case SortOption.nameDesc:
+        sorted.sort((a, b) => b.name.common.compareTo(a.name.common));
+        break;
+      case SortOption.populationAsc:
+        sorted.sort((a, b) => a.population.compareTo(b.population));
+        break;
+      case SortOption.populationDesc:
+        sorted.sort((a, b) => b.population.compareTo(a.population));
+        break;
+      case SortOption.none:
+        // No sorting
+        break;
+    }
+    return sorted;
   }
 
   Future<void> toggleFavorite(String code) async {
